@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <style>
+        body {
+        {#background-image: url('/static/resource/background_grey.jpg');#}{#background-size: cover;#}
+        }
+
+        .myContainer {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            {#height: 800px;#}
+        }
+
+        {# 继承base.css nav，为其添加动画 #}
+        nav {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+
+        {#z-index: 9999;#} opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+        }
+
+        img {
+            border: solid 2px;
+            border-bottom-color: #ffe;
+            border-left-color: #eed;
+            border-right-color: #eed;
+            border-top-color: #ccb;
+            max-height: 100%;
+            max-width: 100%;
+        }
+
+        .frame {
+            background-color: #ddc;
+            border: solid 5vmin #eee;
+            border-bottom-color: #fff;
+            border-left-color: #eee;
+            border-radius: 2px;
+            border-right-color: #eee;
+            border-top-color: #ddd;
+            box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.25) inset, 0 5px 10px 5px rgba(0, 0, 0, 0.25);
+            box-sizing: border-box;
+            display: inline-block;
+            margin: 3vh 0vw;
+            padding: 2vmin;
+            position: relative;
+            text-align: center;
+        }
+
+        .frame:before {
+            border-radius: 2px;
+            bottom: -2vmin;
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.25) inset;
+            content: "";
+            left: -2vmin;
+            position: absolute;
+            right: -2vmin;
+            top: -2vmin;
+        }
+
+        .frame:after {
+            border-radius: 2px;
+            bottom: -2.5vmin;
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.25);
+            content: "";
+            left: -2.5vmin;
+            position: absolute;
+            right: -2.5vmin;
+            top: -2.5vmin;
+        }
+
+    </style>
+{% endblock %}
+
+{% block title %}首页{% endblock %}
+
+{% block content %}
+    <div class="myContainer">
+        <h1 class="jumbotron-heading" style="margin-top: 50px">Text2Art</h1>
+        <p class="lead text-muted">Generate image from text with AI Painter</p>
+        <h1 class="d-none" id="maintenance"> Sorry, site is under maintenance</h1>
+
+        <div class="frame">
+            {#                <img src="/static/resource/A%20beautiful%20painting%20of%20a%20building%20in%20a%20serene%20landscape.png" alt="Mona Lisa"/>#}
+            <div id="myCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" style="width: 500px">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active"
+                            aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1"
+                            aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2"
+                            aria-label="Slide 3"></button>
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="/static/resource/A%20beautiful%20painting%20of%20a%20building%20in%20a%20serene%20landscape.png"
+                             class="d-block w-100" alt="图片走丢了...">
+{#                        <div class="carousel-caption d-none d-md-block">#}
+{#                            <h5 class="opacity-50">A beautiful painting of a building in a serene landscape</h5>#}
+{#                        </div>#}
+                    </div>
+                    <div class="carousel-item">
+                        <img src="/static/resource/the%20Tower%20of%20Babel%20by%20J.M.W.%20Turner.png"
+                             class="d-block w-100" alt="图片走丢了...">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>the Tower of Babel by J.M.W. Turner</h5>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="/static/resource/The%20vast%20starry%20sky.png" class="d-block w-100"
+                             alt="图片走丢了...">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>The vast starry sky</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel"
+                        data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#myCarousel"
+                        data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+
+
+        </div>
+
+
+        <div class="container mb-3">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="modal-box">
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary btn-lg show-modal mt-5" data-bs-toggle="modal"
+                                data-bs-target="#signinModel">
+                            <h3>
+                                Try It Now!
+                            </h3>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let nav = document.getElementById('nav-index');
+            nav.classList.add('active');
+        });
+
+        window.addEventListener("load", function () {
+            let nav = document.querySelector(".navbar");
+            nav.classList.add("nav-show");
+        });
+
+    </script>
+{% endblock %}
