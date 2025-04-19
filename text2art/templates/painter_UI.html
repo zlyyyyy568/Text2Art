@@ -1,0 +1,472 @@
+{% extends "base.html" %}
+
+{% block title %}绘制{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/painter.css">
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="container" style="margin-top: 20px">
+        <div class="row">
+
+            <form id="myForm" class="col-6" action="/painter" method="POST">
+                {#        <form class="col-6" action="/test" method="POST">#}
+                <div class="my-form">
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">输入文字</span>
+<!--                        <input type="text" class="form-control" id="prompt" name="prompt"-->
+<!--                               value="{{ user_tcb.prompts }}" required>-->
+                            <textarea class="form-control" id="prompt" name="prompt" rows="4" required>{{ user_tcb.prompts }}</textarea>
+                    </div>
+
+                    <div class="mb-3 keywords-group">
+                        <input type="radio" class="btn-check" name="promptKeywords" value="Normal"
+                               id="Normal" autocomplete="off"
+                               {% if user_tcb.image_type == 'NORMAL' %}checked{% endif %}>
+                        <label class="btn btn-outline-secondary" for="Normal">默认风格</label>
+
+                        <input type="radio" class="btn-check" name="promptKeywords" value="Artstation"
+                               id="Artstation" autocomplete="off"
+                               {% if user_tcb.image_type == 'ARTSTATION' %}checked{% endif %}>
+                        <label class="btn btn-outline-secondary" for="Artstation">艺术风格</label>
+
+                        <input type="radio" class="btn-check" name="promptKeywords" value="Unreal Engine"
+                               id="Unreal Engine" autocomplete="off"
+                               {% if user_tcb.image_type == 'UNREAL_ENGINE' %}checked{% endif %}>
+                        <label class="btn btn-outline-secondary" for="Unreal Engine">虚幻引擎</label>
+
+                        <input type="radio" class="btn-check" name="promptKeywords" value="Anime"
+                               id="Anime" autocomplete="off"
+                               {% if user_tcb.image_type == 'ANIME' %}checked{% endif %}>
+                        <label class="btn btn-outline-secondary" for="Anime">动漫风格</label>
+
+                        <input type="radio" class="btn-check" name="promptKeywords" value="Minimalist"
+                               id="Minimalist" autocomplete="off"
+                               {% if user_tcb.image_type == 'MINIMALIST' %}checked{% endif %}>
+                        <label class="btn btn-outline-secondary" for="Minimalist">极简风格</label>
+                    </div>
+
+                    <ul class="nav nav-list">
+                        <li class="divider"></li>
+                    </ul>
+
+                    <div class="row mb-3 imgSetting">
+                        <div class="col-3 ">
+                            <label class="form-label col-form-label"><h3>图像设置</h3></label>
+                            <label for="max-iterations" class="mt-2 form-label col-form-label">图像迭代次数</label>
+                            <input type="number" name="max-iterations" id="max-iterations"
+                                   value="{{ user_tcb.iter_time }}"
+                                   class="form-control"/>
+                        </div>
+                        <div class="col-9">
+                            <div class="row">
+                                <div class="row mb-2">
+                                    <label class="col-4 col-form-label">图像分辨率</label>
+                                    <label class="col-8 col-form-label" id="image-resolution">
+                                        {{ user_tcb.width }} x {{ user_tcb.height }}
+                                    </label>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-4">
+                                        <label class="form-label" for="AspectRatioSelect">图像长宽比</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <select class="form-select" id="AspectRatioSelect" name="AspectRatioSelect">
+                                            <option value="customize"
+                                                    {% if user_tcb.aspect_ratio== 'CUSTOMIZE' %}selected{% endif %}>
+                                                自定义
+                                            </option>
+                                            <option value="widescreen"
+                                                    {% if user_tcb.aspect_ratio== 'WIDESCREEN' %}selected{% endif %}>
+                                                widescreen 16:9
+                                            </option>
+                                            <option value="portrait"
+                                                    {% if user_tcb.aspect_ratio== 'PORTRAIT' %}selected{% endif %}>
+                                                portrait 3:4
+                                            </option>
+                                            <option value="square"
+                                                    {% if user_tcb.aspect_ratio== 'SQUARE' %}selected{% endif %}>
+                                                square 1:1
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text">宽度</span>
+                                        <input type="number" class="form-control" id="width-input"
+                                               name="width-input"
+                                               value="{{ user_tcb.width }}" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text">高度</span>
+                                        <input type="number" class="form-control" id="height-input"
+                                               name="height-input"
+                                               value="{{ user_tcb.height }}" required>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <div class="row mb-3">
+                        <fieldset class="col-6">
+                            <div class="row">
+                                <legend class="col-form-label col-5 pt-0">生成模型</legend>
+                                <div class="col-7">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="generatorRadios"
+                                               id="VQGANCheckBox"
+                                               value="VQGAN"
+                                               {% if user_tcb.generator== 'VQGAN' %}checked{% endif %}>
+                                        <label class="form-check-label" for="VQGANCheckBox">
+                                            VQGAN
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="generatorRadios"
+                                               id="VQGAN-MSECheckBox"
+                                               value="VQGAN-MSE"
+                                               {% if user_tcb.generator== 'VQGANMSE' %}checked{% endif %}>
+                                        <label class="form-check-label" for="VQGAN-MSECheckBox">
+                                            VQGAN-MSE
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="generatorRadios"
+                                               id="BigGANCheckBox"
+                                               value="BigGAN"
+                                               {% if user_tcb.generator== 'BIGGAN' %}checked{% endif %}>
+                                        <label class="form-check-label" for="BigGANCheckBox">
+                                            BigGAN
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="col-6">
+                            <div class="row">
+                                <legend class="col-form-label col-5 pt-0">判别模型</legend>
+                                <div class="col-7" style="display: flex;flex-direction: column">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="discriminatorRadios"
+                                               id="CLIPCheckBox"
+                                               value="CLIP"
+                                               {% if user_tcb.discriminator== 'CLIP' %}checked{% endif %}>
+                                        <label class="form-check-label" for="CLIPCheckBox">
+                                            CLIP
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="discriminatorRadios"
+                                               id="ChineseCLIPCheckBox"
+                                               value="Chinese-CLIP"
+                                               {% if user_tcb.discriminator== 'CHINESE_CLIP' %}checked{% endif %}>
+                                        <label class="form-check-label" for="ChineseCLIPCheckBox">
+                                            Chinese-CLIP
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+
+                    <br>
+
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" id="inputGroupFileAddonInitialInput"
+                               aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                        <button class="btn btn-outline-secondary" onclick="uploadInitialImage()" type="button"
+                                id="inputGroupFileAddonInitialBtn">
+                            上传初始图像
+                        </button>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" id="inputGroupFileAddonTargetInput"
+                               aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                        <button class="btn btn-outline-secondary" type="button"
+                                onclick="uploadTargetImage()"
+                                id="inputGroupFileAddonTargetBtn">上传目标图像
+                        </button>
+                    </div>
+
+                    <br>
+                    <hr>
+                    <br>
+
+                    <div class="text-center ">
+                        <button id="generateBtn" type="submit" class="btn btn-primary mx-3">生成图像
+                        </button>
+                        <button onclick="watchVideo('{{ user_tcb.videoSrc }}')" type="button" class="btn btn-success "
+                                data-bs-toggle="modal"
+                                data-bs-target="#videoModal">查看视频
+                        </button>
+                        <button onclick="interruptGeneration()" type="button" class="btn btn-danger mx-3">终止生成
+                        </button>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info mx-4 dropdown-toggle" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                确认结果
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a id="saveImageBtn" onclick="saveImage()"
+                                       class="dropdown-item" href="javascript:void(0);">保存图片</a></li>
+                                <li><a onclick="clearImage()"
+                                       class="dropdown-item" href="javascript:void(0);">清除图片</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+
+            <div class="col-6" style="margin-top: 20px">
+                <div class="result-show ">
+
+                    <div id="progressSpinner" class="spinner-border spinner-border-sm" role="status"
+                         style="display:none"></div>
+                    <label id="progressLabel">没有正在运行的任务</label>
+                    <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="0"
+                         aria-valuemin="0" aria-valuemax="300">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+                    </div>
+                    <br>
+
+                    <div class="border">
+                        <span class="border-before"></span>
+                        <div class="frame">
+                            <img id="my-image" src="{{ user_tcb.imgSrc }}"
+                                 class="rounded mx-auto d-block"
+                                 alt="...">
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoModalTitle">video</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <video controls id="myVideo">
+                        {#                                        <source src="{{ url_for('static', filename='videos/ocean.mp4') }}" type="video/mp4">#}
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" onclick="downloadVideo()" class="btn btn-primary">下载</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {#    <div id="AlertPlaceholder"></div>#}
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="/static/painter.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let nav = document.getElementById('nav-painter');
+            nav.classList.add('active');
+        });
+
+        function uploadInitialImage() {
+            let fileInput = document.getElementById('inputGroupFileAddonInitialInput')
+            let formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/painter/uploadInitialImage", true);
+            // 注册回调函数
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    // 请求完成
+                    if (xhr.status === 200) {
+                        // 成功获取响应
+                        alertMessage('success', "成功上传！")
+                    } else {
+                        // 请求失败
+                        alertMessage('danger', "上传失败...")
+                    }
+                }
+            };
+            xhr.send(formData);
+        }
+
+        function uploadTargetImage() {
+            let fileOutput = document.getElementById('inputGroupFileAddonTargetInput')
+            let formData = new FormData();
+            formData.append("file", fileOutput.files[0]);
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/painter/uploadTargetImage", true);
+            // 注册回调函数
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    // 请求完成
+                    if (xhr.status === 200) {
+                        // 成功获取响应
+                        alertMessage('success', "成功上传！")
+                    } else {
+                        // 请求失败
+                        alertMessage('danger', "上传失败...")
+                    }
+                }
+            };
+            xhr.send(formData);
+        }
+
+        window.onload = function () {
+            let progressLabel = document.getElementById('progressLabel');
+            let progressSpinner = document.getElementById('progressSpinner');
+
+            let message = '';
+            {% if username %}
+                {# 判断用户是否登录，如果用户登录，则username变量记录了用户名 #}
+                let hello = `Hi {{ username }}, `;
+                {# 根据用户状态执行不同操作 #}
+                {% if user_status=="NO_TASK" %}
+                    message = hello + "开始生成图像吧！";
+                    progressSpinner.style.display = "none";
+                    progressLabel.innerHTML = "开始生成图像吧！";
+                {% elif user_status=="HAS_WAIT_TASK" %}
+                    {# todo 添加查询请求 每10s 查询一次 #}
+                    setImageSrc("{{ user_tcb.aspect_ratio|lower }}")
+                    message = hello + "您的任务仍在排队中...";
+                    progressSpinner.style.display = "";
+                    progressLabel.innerHTML = "排队等待中...";
+                {% elif user_status=="HAS_RUNNING_TASK" %}
+                    setImageSrc("{{ user_tcb.aspect_ratio|lower }}")
+                    message = hello + "您有正在执行的任务！";
+                    continnueGeneration();
+                {% elif user_status=="HAS_FINISH_TASK" %}
+                    setImageFrame("{{ user_tcb.aspect_ratio|lower }}")
+                    message = hello + "您有待确认的生成结果！";
+                    progressSpinner.style.display = "none";
+                    progressLabel.innerHTML = "请选择保存或删除图片！";
+                {% else %}
+                    message="Error: "+{{ user_status.taskStatus }}
+                {% endif %}
+
+            {#0.2s后发送欢迎信息#}
+            setTimeout(function () {
+                alertMessage('primary', message, 2000);
+            }, 200);
+            {% endif %}
+        }
+
+        const myForm = document.getElementById('myForm');
+
+        myForm.addEventListener('submit', function (event) {
+            event.preventDefault(); // 阻止表单默认提交行为
+
+            // 获取表单数据
+            const formData = new FormData(myForm);
+            let fileInput = document.getElementById('inputGroupFileAddonInitialInput')
+            let fileOutput = document.getElementById('inputGroupFileAddonTargetInput')
+            formData.append('initialImageName', fileInput.value)
+            formData.append('targetImageName', fileOutput.value)
+
+            // 检验用户输入
+            let textPrompt = formData.get('prompt');
+            if (/^\s*$/.test(textPrompt)) {
+                alertMessage('danger', '请输入文本提示!');
+                return
+            } else if (!/^[\s|a-zA-Z,.\u4e00-\u9fa5，。]+$/.test(textPrompt)) {
+                alertMessage('danger', '输入中出现非法字符！');
+                return
+            }
+
+            let progressLabel = document.getElementById('progressLabel');
+            let progressSpinner = document.getElementById('progressSpinner');
+            progressSpinner.style.display = "inline-block";
+            progressLabel.innerHTML = "提交请求中...";
+
+
+            // 发送POST请求
+            fetch('/painter', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 处理响应数据
+                    if (data.error !== undefined) {
+                        if (data.error === 'notLogin') {
+                            alertMessage('warning', '请先登录哦！')
+                            progressSpinner.style.display = "none";
+                            progressLabel.innerHTML = "只有登录后才可以使用！";
+                        } else if (data.error === 'hasWaitTask') {
+                            alertMessage('danger', '已提交任务请求，请耐心等待哦！')
+                            progressSpinner.style.display = "inline-block";
+                            progressLabel.innerHTML = "排队等待中...";
+                        } else if (data.error === 'hasRunningTask') {
+                            alertMessage('danger', '任务已在运行！')
+                        } else if (data.error === 'hasFinishTask') {
+                            alertMessage('info', '请先确认生成的图片！')
+                            progressSpinner.style.display = "none";
+                            progressLabel.innerHTML = "请选择保存或删除图片！";
+                        }
+                    } else if (data.status !== undefined) {
+                        if (data.status === 'taskWait') {
+                            alertMessage('primary', '已提交当前任务！')
+                            let progressLabel = document.getElementById('progressLabel');
+                            let progressSpinner = document.getElementById('progressSpinner');
+                            progressSpinner.style.display = "inline-block";
+                            progressLabel.innerHTML = "排队中...";
+                        } else if (data.status === 'startGeneration') {
+                            startGeneration();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+
+    </script>
+
+{% endblock %}

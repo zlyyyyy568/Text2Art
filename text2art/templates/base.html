@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+        {% block title %}Demo{% endblock %}
+    </title>
+    <link rel="stylesheet" href="/static/bootstrap-5.3.0-alpha1-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/icons-1.10.4/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/base.css">
+
+    <style>
+        body {
+        {#background-image: url('/static/resource/b2.jpg');#}{#background-size: cover;#}
+        }
+
+        .logo-font {
+            font-size: 36px;
+        }
+
+        .nav-font {
+            font-size: 24px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .nav-link:hover {
+            font-weight: bold;
+            transform: scale(1.2); /* 放大1.2倍 */
+        }
+
+        .nav-input-button {
+            background-color: dimgray;
+            color: white;
+            opacity: 0.5;
+        }
+
+        .nav-input {
+            background-color: white;
+            color: black;
+            opacity: 0.4;
+        }
+
+        .nav-input:focus {
+            background-color: white;
+            opacity: 0.8;
+            color: black;
+        }
+
+        .my-register-btn:hover {
+            cursor: pointer; /* 鼠标悬停在元素上时变为显示手形*/
+            opacity: 0.7;
+        }
+
+
+        nav {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        {#box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);#} z-index: 999;
+        }
+
+        .nav-show {
+            opacity: 1;
+        }
+
+        .profile-head {
+            transform: translateY(5.3rem);
+            display: flex;
+            align-items: center;
+
+        }
+
+        .profile {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cover {
+            background-image: url("/static/resource/profile-background.avif");
+            background-size: cover;
+            background-repeat: no-repeat
+        }
+
+
+    </style>
+    {% block css %}
+    {% endblock %}
+
+</head>
+
+<body>
+<nav class="navbar navbar-expand bg-secondary navbar-dark justify-content-start">
+    <a class="navbar-brand logo-font mx-5" href="#">文本生成图像</a>
+    <ul class="navbar-nav me-auto">
+        <li class="nav-item ">
+            <a class="nav-link mx-2 nav-font " id="nav-index" href="/index">首页</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link mx-2 nav-font" id="nav-painter" href="/painter">绘制</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link mx-2 nav-font" id="nav-gallery" href="/gallery">画廊</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link mx-2 nav-font" id="nav-homepage" href="/homepage">我的</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link mx-2 nav-font" href="/about">关于</a>
+        </li>
+    </ul>
+
+    <div class="input-group mx-5" style="width:20vw">
+        <input type="text" class="form-control nav-input" placeholder="Search in Gallery"
+               aria-label="Recipient's username"
+               aria-describedby="button-addon2">
+        <button class="btn nav-input-button" type="button" id="button-addon2">search</button>
+    </div>
+
+    {% if not username %}
+        <span class="text-white my-register-btn" id="navSigninBtn"
+              data-bs-toggle="modal" data-bs-target="#signupModel">注册
+        </span>
+        <button type="button" class="btn btn-outline-light ms-3 me-5 " id="navSignupBtn"
+                data-bs-toggle="modal" data-bs-target="#signinModel">登录
+        </button>
+    {% else %}
+        <div class="btn-group ms-3 me-5"
+             id="navLoginBtn">
+            <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <b>{{ username }}</b>&nbsp的账号&nbsp;&nbsp;&nbsp;
+                {#                Sign in as {{ username }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#}
+            </button>
+            <ul class="dropdown-menu ">
+                <li><a class="dropdown-item" href="javascript:void(0);"
+                       onclick="showProfile()"
+                       data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions"
+                       aria-controls="offcanvasWithBothOptions">个人主页</a></li>
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0);"
+                       onclick="$('#changeAccountModel').modal('show');">账户管理</a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="/logout">退出登录</a></li>
+            </ul>
+        </div>
+    {% endif %}
+</nav>
+
+
+{% block content %}
+{% endblock %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="modal-box">
+                <!-- Sign In Modal -->
+                <div class="modal fade" id="signinModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+
+                            <button type="button" class="btn-close my-close-btn" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+
+                            <div class="modal-body">
+                                <h3 class="title">Hi there 👋</h3>
+                                <h4 class="text-muted">Welcome to Text2Art! </h4>
+                                <p class="text-black-50" id="signinPrompt">请登录您的账号开始体验！</p>
+                                <div class="form-group">
+                                    <input class="form-control user" id="signinAccount" type="text"
+                                           placeholder="Account"/>
+                                    <div class="position-relative">
+                                        <input class="form-control user" id="signinPassword" type="password"
+                                               placeholder="Password"/>
+                                        <i class="bi bi-eye-slash password-eye" id="signinPasswordEyeSlash"
+                                           onclick="passwordToggle('signin')"></i>
+                                        <i class="bi bi-eye password-eye" id="signinPasswordEye"
+                                           style="display: none" onclick="passwordToggle('signin')"></i>
+                                    </div>
+                                </div>
+                                <button class="subscribe mt-5" onclick="signin()">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i>
+                                    登录
+                                </button>
+
+                            </div>
+
+                            <div class="modal-footer my-modal-footer">
+                                <span class="left-tag">
+                                        <a class="font-size-sm text-muted no-underline" onclick="model2signup()"
+                                           href="javascript:void(0);">注册</a>
+                                        <span class="text-muted mx-1">|</span>
+                                        <a class="font-size-sm text-muted no-underline"
+                                           onclick="signinMessage('Please send email to ShaoJianFeng518@gamil.com')"
+                                           href="javascript:void(0);">忘记密码</a>
+
+                                    </span>
+                                <span class="right-tag">
+                                    <i class="bi bi-globe2"></i>
+                                        <span class="font-size-sm text-muted"
+                                              style="vertical-align: text-bottom;">简体中文</span>
+                                    </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Sign Up Modal -->
+                <div class="modal fade" id="signupModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+
+                            <button type="button" class="btn-close my-close-btn" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+
+                            <div class="modal-body">
+                                <h3 class="title">Hi there 🚀</h3>
+                                <h4 class="text-muted">Start here Text2Art! </h4>
+                                <p class="text-black-50" id="signupPrompt">请注册您的账号开始体验！</p>
+                                <div class="form-group">
+                                    <input class="form-control user" id="signupAccount" type="text"
+                                           placeholder="Account"/>
+                                    <div class="position-relative">
+                                        <input class="form-control user" id="signupPassword" type="password"
+                                               placeholder="Password"/>
+                                        <i class="bi bi-eye-slash password-eye" id="signupPasswordEyeSlash"
+                                           onclick="passwordToggle('signup')"></i>
+                                        <i class="bi bi-eye password-eye" id="signupPasswordEye"
+                                           style="display: none" onclick="passwordToggle('signup')"></i>
+                                    </div>
+
+                                    {#                                        <input class="form-control user" type="email" placeholder="Email"/>#}
+                                </div>
+                                <button class="subscribe" onclick="signup()">
+                                    <i class="bi bi-emoji-smile me-1"></i>
+                                    注册
+                                </button>
+
+                            </div>
+
+                            <div class="modal-footer my-modal-footer">
+                                <span class="left-tag">
+                                    <a class="font-size-sm text-muted no-underline" onclick="model2signin()"
+                                       href="javascript:void(0);">返回登录</a>
+                                        <span class="text-muted mx-1">|</span>
+                                        <a class="font-size-sm text-muted no-underline"
+                                           href="javascript:void(0);">需要帮助？</a>
+
+                                </span>
+                                <span class="right-tag">
+                                    <i class="bi bi-globe2"></i>
+                                        <span class="font-size-sm text-muted"
+                                              style="vertical-align: text-bottom;">简体中文</span>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Change Password Modal -->
+                <div class="modal fade" id="changeAccountModel" tabindex="-1" role="dialog"
+                     aria-labelledby="myModalLabel">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+
+                            <button type="button" class="btn-close my-close-btn" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+
+                            <div class="modal-body">
+                                <h3 class="title">A bad account?</h3>
+                                <h4 class="text-muted">Don't worry 😨</h4>
+                                <p class="text-black-50" id="signupPrompt">你可以在这里修改账户和密码！</p>
+                                <div class="form-group">
+                                    <input class="form-control user" id="newAccount" type="text"
+                                           placeholder="New Account"/>
+                                    <input class="form-control user" id="new Password" type="text"
+                                           placeholder="New Password"/>
+                                </div>
+                                <button class="subscribe" onclick="">
+                                    修改
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+
+                            </div>
+
+                            <div class="modal-footer my-modal-footer">
+                                <span class="left-tag">
+                                    <a class="font-size-sm text-muted no-underline" onclick=""
+                                       href="javascript:void(0);">恢复默认</a>
+                                        <span class="text-muted mx-1">|</span>
+                                        <a class="font-size-sm text-muted no-underline"
+                                           href="javascript:void(0);">需要帮助？</a>
+
+                                </span>
+                                <span class="right-tag">
+                                    <i class="bi bi-globe2"></i>
+                                        <span class="font-size-sm text-muted"
+                                              style="vertical-align: text-bottom;">简体中文</span>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
+     aria-labelledby="offcanvasWithBothOptionsLabel"
+     style="width: 550px">
+    <div class="offcanvas-header px-5">
+        <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">
+            <i class="bi bi-house"></i>
+            &nbsp个人主页
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+
+        <div class="row py-2 px-4">
+            <div class="mx-auto"> <!-- Profile widget -->
+                <div class="bg-white shadow rounded overflow-hidden">
+                    <div class="px-4 cover" style="height: 200px">
+                        <div class="media profile-head">
+                            <div class="profile mr-3">
+                                <img src="/static/temp/{{ user_id }}/profileImage.png"
+                                     id="profileImage"
+                                     alt="..." width="130" class="rounded mb-2 img-thumbnail"
+                                     onerror="this.onerror=null; this.src='/static/resource/profile-photo.avif'">
+                                <input type="file" id="uploadProfileInput" style="display:none;">
+                                <a href="#"
+                                   onclick="document.getElementById('uploadProfileInput').click(); return false;"
+                                   class="btn btn-outline-dark btn-sm btn-block">
+                                    上传头像
+                                </a>
+                            </div>
+                            <div class="media-body mx-3 mb-5 text-white">
+                                {#                                <h4 class="mt-4 mb-0">Mark Williams</h4>#}
+                                <h4 class="mt-4 mb-0">{{ username }}</h4>
+                                <p class="small mb-4"><i class="fas fa-map-marker-alt mr-2"></i>&nbspFrom China</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-light p-4 d-flex justify-content-end text-center">
+                        <ul class="list-inline mb-0">
+                            <li class="list-inline-item mx-2">
+                                <h5 class="font-weight-bold mb-0 d-block" id="profileCreatedNum">0</h5>
+                                <small class="text-muted"><i class="bi bi-palette"></i>&nbsp创作</small>
+                            </li>
+                            <li class="list-inline-item  mx-2">
+                                <h5 class="font-weight-bold mb-0 d-block" id="profileCommentNum">0</h5>
+                                <small class="text-muted"> <i class="bi bi-chat-left-dots"></i>&nbsp评论</small>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="px-4 py-4">
+                        <h5 class="mb-0">
+                            <i class="bi bi-bell"></i>
+                            &nbsp公告栏</h5>
+                        <div class="p-4 rounded shadow-sm bg-light text-muted">
+                            <p class="font-italic mb-0">欢迎来到Text2Art 🧑‍🎨</p>
+                            <p class="font-italic mb-0">Text2Art是一个自由的文本生成图像网站</p>
+                            <p class="font-italic mb-0">在这里，你可以尽情发挥创造力</p>
+                            <div>&nbsp</div>
+                            <p class="font-italic mb-0">还等什么，现在就开始创作吧！</p>
+                        </div>
+                    </div>
+                    <div class="py-4 px-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="mb-0">
+                                {#                                <i class="bi bi-images"></i>#}
+                                &nbsp最近创作
+                            </h5>
+                            <a href="/homepage" class="btn btn-link text-muted">所有图片</a></div>
+                        <div class="row">
+                            <div class="col-lg-6 mb-2 pr-lg-1">
+                                <img src=""
+                                     alt="" class="img-fluid rounded shadow-sm"
+                                     id="profileImage-1">
+                            </div>
+                            <div class="col-lg-6 mb-2 pl-lg-1">
+                                <img src=""
+                                     alt="" class="img-fluid rounded shadow-sm"
+                                     id="profileImage-2">
+                            </div>
+                            <div class="col-lg-6 pr-lg-1 mb-2">
+                                <img src=""
+                                     alt="" class="img-fluid rounded shadow-sm"
+                                     id="profileImage-3">
+
+                            </div>
+                            <div class="col-lg-6 pl-lg-1">
+                                <img src=""
+                                     alt="" class="img-fluid rounded shadow-sm"
+                                     id="profileImage-4">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div id="AlertPlaceholder">
+    <div id="primary-alert" class="alert alert-primary alert-dismissible fade show myAlert" style="display: none"
+         role="alert">
+        <i class="bi bi-emoji-sunglasses me-2" style="font-size: 1.2rem;"></i>
+        <span id="primary-alert-message"></span>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div id="success-alert" class="alert alert-success alert-dismissible fade show myAlert" style="display: none"
+         role="alert">
+        <i class="bi bi-emoji-sunglasses me-2" style="font-size: 1.2rem;"></i>
+        <span id="success-alert-message"></span>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div id="info-alert" class="alert alert-info alert-dismissible fade show myAlert" style="display: none"
+         role="alert">
+        <i class="bi bi-check-circle me-2" style="font-size: 1.2rem;"></i>
+        <span id="info-alert-message"></span>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div id="warning-alert" class="alert alert-warning alert-dismissible fade show myAlert" style="display: none"
+         role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2" style="font-size: 1.2rem;"></i>
+        <span id="warning-alert-message"></span>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div id="danger-alert" class="alert alert-danger alert-dismissible fade show myAlert" style="display: none"
+         role="alert">
+        <i class="bi bi-exclamation-triangle me-2" style="font-size: 1.2rem;"></i>
+        <span id="danger-alert-message"></span>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+
+
+{#<footer class="text-muted">#}
+{#    <div class="container">#}
+{#        <p class="float-right">#}
+{#            <a href="#">Back to top</a>#}
+{#        </p>#}
+{#        <p>Copyright © 2023 by Maple</p>#}
+{#    </div>#}
+{#</footer>#}
+
+</body>
+
+<script src="/static/jquery-3.6.4.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/bootstrap-5.3.0-alpha1-dist/js/bootstrap.js"></script>
+<script src="/static/bootstrap-5.3.0-alpha1-dist/js/bootstrap.bundle.js"></script>
+<script src="/static/base.js"></script>
+
+<script>
+    {#  用户最近创作的图片  #}
+    const profileImages = [
+        document.getElementById("profileImage-1"),
+        document.getElementById("profileImage-2"),
+        document.getElementById("profileImage-3"),
+        document.getElementById("profileImage-4"),
+    ]
+
+    window.addEventListener("load", function () {
+        {#导航栏选中#}
+        let nav = document.querySelector(".navbar");
+        nav.classList.add("nav-show");
+
+        const uploadProfileInput = document.getElementById('uploadProfileInput');
+
+        uploadProfileInput.addEventListener('change', () => {
+            {#向后端发出请求，上传用户头像#}
+            const file = uploadProfileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/uploadProfile', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        alertMessage('success', "成功上传！")
+                        let img = document.getElementById("profileImage");
+                        img.src = "/static/temp/{{ user_id }}/profileImage.png?tempid=" + Math.random();
+                    } else {
+                        alertMessage('danger', "上传失败...")
+                    }
+                })
+                .catch(error => {
+                    alertMessage('danger', "上传失败...")
+                });
+        });
+    });
+
+    function showProfile() {
+        {#向后端发出请求，显示用户最近创建的图像#}
+        fetch('/homepage/showProfile', {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then(data => {
+                let images = data.images;
+                for (let i = 0; i < images.length && i < 4; i++) {
+                    profileImages[i].src = images[i];
+                }
+                document.getElementById('profileCreatedNum').innerHTML = data.createNum;
+                document.getElementById('profileCommentNum').innerHTML = data.commentNum;
+                console.log(data.commentNum)
+            })
+            .catch(error => {
+                console.error(error)
+            });
+    }
+
+
+</script>
+
+{% block scripts %}
+{% endblock %}
+
+</html>

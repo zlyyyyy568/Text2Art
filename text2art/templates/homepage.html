@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/homepage.css">
+    {#    <link rel="stylesheet" href="/static/all.min.css"/>#}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+          integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="/static/gallery.css">
+
+    <style>
+
+
+    </style>
+{% endblock %}
+
+{% block title %}我的空间{% endblock %}
+
+{% block content %}
+
+
+    {#    {% for image in images|filter_square %}#}
+    {#        <img src="{{ image.imageSrc }}">#}
+    {#    {% endfor %}#}
+    <div class="container mt-5 container-card">
+        <div class="row" style="display: flex;align-items: center">
+
+            <div class="home-page-gallery-container bg-light col-6 gallery-card">
+
+                <!-- <div class="feature"> -->
+                <div class="card-image">
+                    <img class="featured-item transition"
+                         src="{{ images[0].imageSrc }}">
+
+
+                    <video controls id="feature-video" class="featured-item transition" style="display: none">
+                        <source src=""
+                                type="video/mp4">
+                        Your browser doesn't support HTML5 video tag.
+                    </video>
+
+                </div>
+
+
+                <div class="gallery-wrapper">
+                    <div class="gallery">
+                        {% for image in images %}
+                            <div class="item-wrapper">
+                                <img class="gallery-item transition"
+                                     src="{{ image.imageSrc }}">
+                                <span style="display: none">{{ loop.index0 }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <i class="bi bi-chevron-double-left swiper-button-prev swiper-button"></i>
+                    <i class="bi bi-chevron-double-right swiper-button-next swiper-button"></i>
+                </div>
+
+                <div class="controls">
+                    <button class="move-btn left">&larr;</button>
+                    <button class="move-btn right">&rarr;</button>
+                </div>
+
+
+            </div>
+
+            <div class="col-6 ">
+                {% for image in images %}
+                    <div class="image-info-item" style="display: none">
+                        <h1>{{ image.name }}</h1>
+                        <span class="imageID" style="display: none">{{ image.id }}</span>
+                        <h4>
+                            <span class="badge rounded-pill text-bg-warning"
+                                  style="opacity: 0.85">{{ image.image_type }}</span>
+                            <span class="badge rounded-pill text-bg-warning"
+                                  style="opacity: 0.85">{{ image.generator }}</span>
+                            <span class="badge rounded-pill text-bg-warning"
+                                  style="opacity: 0.85">{{ image.discriminator }}</span>
+                        </h4>
+
+
+                        <div class="description text-muted my-4">
+                            <p>迭代次数: <b>{{ image.iter_time }}</b></p>
+                            <p>图像分辨率: <b>{{ image.width }}</b> X <b>{{ image.height }}</b></p>
+                            <p>其他信息:
+                                <b>
+                                    {% if image.tag=='' %}
+                                        无
+                                    {% else %}
+                                        {{ image.tag }}
+                                    {% endif %}
+                                </b>
+                            </p>
+
+                        </div>
+
+
+                        <div>
+                            <button type="button" class="btn btn-primary mx-2"
+                                    onclick="getComments(document.querySelectorAll('.imageID')[selectedItem].innerHTML)">
+                                管理评论
+                            </button>
+                            <button type="button" class="btn btn-success mx-2"
+                                    onclick="downloadImage()">下载图片
+                            </button>
+                            <button type="button" class="btn btn-info mx-2"
+                                    onclick="watchVideo()">查看视频
+                            </button>
+                            <button type="button" class="btn btn-danger mx-2"
+                                    onclick="deleteImage()">删除图片
+                            </button>
+                        </div>
+                    </div>
+
+                {% endfor %}
+
+
+            </div>
+
+            <div class="playBtn-container" onclick="toggleVideo()">
+                <i class="fas fa-play"></i>
+            </div>
+
+            <div class="ribbon">
+                <span class="ribbon__content">exclusive</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content modal-body">
+
+                <div id="msgBox">
+                    <form>
+
+                        <div class="d-flex">
+                            <div style="display: flex;flex-direction: column">
+                                {#                                <img class="userPic" src="/static/resource/profile-photo.avif" id="userPic" alt=""/>#}
+                                <img src="/static/temp/{{ user_id }}/profileImage.png"
+                                     id="userPic"
+                                     class="userPic" alt=""
+                                     onerror="this.onerror=null; this.src='/static/resource/profile-photo.avif'">
+                                <div class="userName text-muted text-center" id="userName">
+                                    {% if username %}
+                                        {{ username }}
+                                    {% else %}
+                                        未登录用户
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <textarea id="conBox" class="f-text"></textarea>
+                        </div>
+                        <div class="tr">
+                            <div id="commentInfo">
+                                <span class="countTxt">还能输入</span>
+                                <strong class="maxNum">140</strong>
+                                <span>个字</span>
+                            </div>
+                            <div id="commentBtn">
+                                <button id="sendBtn" type="button" class="mx-1 btn btn-primary opacity-75">
+                                    &nbsp发布&nbsp
+                                </button>
+                                <button onclick="$('#commentModal').modal('hide')"
+                                        type="button" class="mx-1 btn btn-secondary opacity-75">&nbsp取消&nbsp
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="list ">
+                        <h3><span class="commentNumSpan"><strong><span id="commentNum">0</span> 条评论</strong> </span>
+                        </h3>
+                        <ul id="commentUL">
+
+                            <li>
+                                <img class="userPic" src="/static/resource/profile-photo.avif" alt=""/>
+                                <div class="content">
+                                    <div class="userName">
+                                        永不上线
+                                    </div>
+                                    <div class="msgInfo">新增删除广播功能。</div>
+                                    <div class="times">
+                                        <span>07月05日 15:14</span>
+                                        <a class="del no-underline " style="display: none"
+                                           href="javascript:void(0);">删除</a>
+                                    </div>
+                                </div>
+                            </li>
+
+
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="/static/homepage.js"></script>
+    <script src="/static/gallery.js"></script>
+
+    <script>
+        candelete = true;
+        document.addEventListener('DOMContentLoaded', () => {
+            let nav = document.getElementById('nav-homepage');
+            nav.classList.add('active');
+
+        })
+
+        let isVideoOpen = false;
+
+        function toggleVideo() {
+            {# 在视频与图像间切换 #}
+            if (isVideoOpen) {
+                closeVideo();
+                isVideoOpen = false;
+            } else {
+                watchVideo();
+                isVideoOpen = true;
+            }
+        }
+
+        function downloadImage() {
+            {# 通过创建<a>标签实现图片的下载 #}
+            let imagesID = document.querySelectorAll('.imageID');
+            let imageID = imagesID[selectedItem]
+
+            let link = document.createElement('a');
+            link.href = `/static/results/images/${parseInt(imageID.innerHTML)}.png`;
+            link.download = 'downloadImage.png';
+            link.click();
+        }
+
+
+        function watchVideo() {
+            {# 显示图像的生成视频 #}
+            let imagesID = document.querySelectorAll('.imageID');
+            let imageID = imagesID[selectedItem]
+            document.querySelector('#feature-video source').setAttribute("src",
+                `/static/results/videos/${parseInt(imageID.innerHTML)}.mp4`
+            );
+
+            let video = document.querySelector('#feature-video');
+            video.load();
+
+            featured.style.display = 'none';
+            video.style.display = '';
+            isVideoOpen = true;
+        }
+
+        function closeVideo() {
+            {# 关闭视频，显示图片 #}
+            featured.style.display = '';
+
+            let video = document.querySelector('#feature-video');
+            video.style.display = 'none';
+            isVideoOpen = false;
+        }
+
+        function deleteImage() {
+            {# 向后端发出请求，删除图片 #}
+            let imagesID = document.querySelectorAll('.imageID');
+            let imageID = imagesID[selectedItem]
+
+            const data = {
+                "imageID": imageID.innerHTML,
+            }
+            fetch('/homepage/deleteImage', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else {
+                        alert(response.status);
+                    }
+                })
+                .then(data => {
+                    if (data.success === false) {
+                        alertMessage('danger', '删除失败！')
+                    } else {
+                        window.location.href = '/homepage'
+                    }
+                })
+                .catch(error => console.error(error));
+        }
+
+
+    </script>
+{% endblock %}

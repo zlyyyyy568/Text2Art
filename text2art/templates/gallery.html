@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block title %}画廊{% endblock %}
+
+{% block css %}
+
+    <link rel="stylesheet" href="/static/gallery.css">
+
+    <style>
+        img {
+            padding: 3px;
+            border: 1px solid #dfdfdf;
+        }
+
+        nav {
+        {#box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);#}
+        }
+
+        .gallery-head {
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+        {#background-color: #e9ecef;#} border-radius: 0.3rem;
+        }
+
+        .bShadow-12, .bShadow-12h:hover {
+            box-shadow: rgba(62, 57, 107, 0.36) 0 16px 38px -12px, rgba(62, 57, 107, 0.12) 0 4px 25px 0, rgba(62, 57, 107, 0.2) 0 8px 10px -5px;
+        }
+
+        .bShadow-16, .bShadow-16h:hover {
+            box-shadow: rgba(16, 36, 94, 0.25) 0 -50px 100px -30px;
+        }
+
+        .bShadow-36, .bShadow-36h:hover {
+            box-shadow: rgba(0, 0, 0, 0.2) -15px -15px 5px -5px;
+        }
+
+        .bShadow-46, .bShadow-46h:hover {
+            box-shadow: rgba(0, 0, 0, 0.09) 0 6px 9px 0;
+        }
+
+        .my-card {
+            transition: transform 0.2s ease-out;
+        }
+
+        .like-icon {
+            transition: all 0.3s;
+        {#cursor: pointer; /* 鼠标悬停在元素上时变为显示手形*/#}
+        }
+
+
+        .like-icon:hover {
+            transform: scale(1.4);
+            color: red;
+            cursor: pointer; /* 鼠标悬停在元素上时变为显示手形*/
+        }
+
+        #gallery-tabs input {
+            font-size: 1.2rem;
+            padding: 0.175rem 0.3rem;
+            opacity: 100;
+            color: rgb(128, 128, 128);
+            font-weight: 600;
+            border: none;
+        }
+
+        #gallery-tabs .btn {
+        {#font-size: 1.2rem;#} padding: 0.175rem 0.3rem;
+            color: #6c757d;
+            border: none;
+            opacity: 0.6;
+        }
+
+        .sortbtnChecked {
+            color: rgb(18, 18, 18);
+            background-color: rgb(255, 255, 255);
+        }
+
+    </style>
+
+{% endblock %}
+
+{% macro imageCard(id='${image.id}',name='${image.name}',image_type='${image.image_type}',
+    generator ='${image.generator}',discriminator='${image.discriminator}',
+    time ='${image.time}',like='${image.like}',
+    user_name='${image.user_name}') %}
+    <div class="col-lg-4 col-6">
+        <div class="card my-card mb-4 card0 bShadow-46 bShadow-12h">
+            <img class="card-img-top"
+                 src="/static/results/images/{{ id }}.png"
+                 onclick="getComments({{ id }})"
+                 alt="Card image cap" style="cursor: pointer;">
+
+            <div class="card-body">
+                <h5 class="card-title" style="cursor: pointer;">
+                    {{ name }}
+                </h5>
+                <div class="mb-3">
+                    <span class="badge rounded-pill bg-secondary">
+                        <i class="bi bi-image-fill me-1"></i>
+                        {{ image_type }}
+                    </span>
+                    <span class="badge rounded-pill bg-secondary">
+                        <i class="bi bi-palette-fill me-1"></i>
+                        {{ generator }}
+                    </span>
+                    <span class="badge rounded-pill bg-secondary">
+                        <i class="bi bi-search me-1"></i>
+                        {{ discriminator }}
+                    </span>
+                </div>
+                <div class="image-buttons d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="bi bi-person"></i>
+                        <label class="me-1">{{ user_name }}</label>
+                        <i class="bi bi-heart ms-1 like-icon" onclick="addLike({{ id }})"></i>
+                        <label class="me-1" id="likeNum-{{ id }}">{{ like }}</label>
+                        <i class="bi bi-calendar-date ms-1"></i>
+                        <label class="me-1">{{ time }}</label>
+                    </small>
+
+                    <small class="text-muted socials">
+                        <a href="/static/results/images/{{ id }}.png"
+                           download="{{ name }}.png">
+                            <i class="bi bi-download"></i></a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% block content %}
+
+    <div id="gallery" class="py-5 bg-light">
+        <div class="container">
+            <div class="gallery-head pb-1 text-center bShadow-46">
+                <h1>这里是 画廊 和 讨论区...</h1>
+                <p class="lead" style="margin-bottom: 0rem">你可以欣赏其他用户的作品...</p>
+                <p class="lead" style="margin-bottom: 0rem">也可以与他人自由讨论...</p>
+                <p class="lead">并为喜欢的作品点赞...</p>
+                <div id='gallery-tabs' class="btn-group bShadow-46" style="margin-bottom: 15px"
+                     role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" class="btn-check" name="sortRadio" id="topBtn" autocomplete="off" checked>
+                    <label class="btn btn-outline-Secondary" id="topLabel" for="topBtn">&nbsp热度&nbsp</label>
+
+                    <input type="radio" class="btn-check" name="sortRadio" id="recentBtn" autocomplete="off">
+                    <label class="btn btn-outline-Secondary" id="recentLabel" for="recentBtn">&nbsp最新&nbsp</label>
+                </div>
+
+
+                <br>
+            </div>
+
+            <div class="row scroll-container">
+                {% for image in images %}
+                    {{ imageCard(image.id,image.name,image.image_type,
+                    image.generator,image.discriminator,
+                    image.time,image.like,
+                    image.user_name) }}
+                {% endfor %}
+
+            </div>
+
+            <div class="scroll-loading text-center">loading data...</div>
+        </div>
+    </div>
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content modal-body">
+
+                <div id="msgBox">
+                    <form>
+
+                        <div class="d-flex">
+                            <div style="display: flex;flex-direction: column">
+                                {#                                <img class="userPic" src="/static/resource/profile-photo.avif" id="userPic" alt=""/>#}
+                                <img src="/static/temp/{{ user_id }}/profileImage.png"
+                                     id="userPic"
+                                     class="userPic" alt=""
+                                     onerror="this.onerror=null; this.src='/static/resource/profile-photo.avif'">
+                                <div class="userName text-muted text-center" id="userName">
+                                    {% if username %}
+                                        {{ username }}
+                                    {% else %}
+                                        未登录用户
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <textarea id="conBox" class="f-text"></textarea>
+                        </div>
+                        <div class="tr">
+                            <div id="commentInfo">
+                                <span class="countTxt">还能输入</span>
+                                <strong class="maxNum">140</strong>
+                                <span>个字</span>
+                            </div>
+                            <div id="commentBtn">
+                                <button id="sendBtn" type="button" class="mx-1 btn btn-primary opacity-75">
+                                    &nbsp发布&nbsp
+                                </button>
+                                <button onclick="$('#commentModal').modal('hide')"
+                                        type="button" class="mx-1 btn btn-secondary opacity-75">&nbsp取消&nbsp
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="list ">
+                        <h3><span class="commentNumSpan"><strong><span id="commentNum">0</span> 条评论</strong> </span>
+                        </h3>
+                        <ul id="commentUL">
+
+                            <li>
+                                <img class="userPic" src="/static/resource/profile-photo.avif" alt=""/>
+                                <div class="content">
+                                    <div class="userName">
+                                        永不上线
+                                    </div>
+                                    <div class="msgInfo">新增删除广播功能。</div>
+                                    <div class="times">
+                                        <span>07月05日 15:14</span>
+                                        <a class="del no-underline " style="display: none"
+                                           href="javascript:void(0);">删除</a>
+                                    </div>
+                                </div>
+                            </li>
+
+
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="/static/gallery.js"></script>
+    <script>
+
+
+        function addLike(imageID) {
+            fetch('/gallery/addLike?imageID=' + imageID, {
+                method: 'GET',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    let likeLabel = document.getElementById(`likeNum-${imageID}`);
+                    likeLabel.innerHTML = data.newLikeNum;
+                });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let nav = document.getElementById('nav-gallery');
+            nav.classList.add('active');
+        });
+
+        // 定义变量，用于记录当前页数和每页显示的图片数量
+        let pageIndex = 1;
+        let perPage = 9;
+
+        function getImage() {
+            fetch('/gallery/get_more_images?page=' + pageIndex + '&perPage=' + perPage + '&isTop=' + isTop, {
+                method: 'GET',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    {#console.log(data.images[0])#}
+
+                    let images = data.images
+                    let isFullyLoad = data.isFullyLoad
+
+                    let container = document.querySelector('.scroll-container');
+
+                    for (let i = 0; i < images.length; i++) {
+                        let image = images[i];
+                        let content = `{{ imageCard() }}`;
+                        {#console.log(`{{ imageCard() }}`);#}
+                        container.innerHTML += content;
+                    }
+
+                    pageIndex++;
+                });
+        }
+
+        let isTop = true;
+
+        $('#topBtn').on('change', function () {
+            isTop = true;
+            pageIndex = 1;
+            perPage = 9;
+            $('#topLabel').css('color', 'rgb(18, 18, 18)').css('background-color', 'rgb(255, 255, 255)').css('opacity', '1');
+            $('#recentLabel').css('color', '').css('background-color', '').css('opacity', '0.6');
+
+            let oldCards = $('.scroll-container>div')
+            oldCards.fadeOut();
+            oldCards.remove()
+            getImage()
+
+        }).change();
+
+        $('#recentBtn').on('change', function () {
+            isTop = false;
+            pageIndex = 1;
+            perPage = 9;
+            $('#topLabel').css('color', '').css('background-color', '').css('opacity', '0.6');
+            $('#recentLabel').css('color', 'rgb(18, 18, 18)').css('background-color', 'rgb(255, 255, 255)').css('opacity', '1');
+
+            let oldCards = $('.scroll-container>div')
+            oldCards.fadeOut();
+            oldCards.remove()
+            getImage()
+        })
+
+
+        // 监听滚动事件
+        $(window).scroll(function () {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            let windowHeight = window.innerHeight || document.documentElement.clientHeight;
+            let documentHeight = document.documentElement.scrollHeight;
+            // 动态加载图片
+            {#if ($(window).scrollTop() + $(window).height() >= $(document).height()) {#}
+            if (scrollTop + windowHeight >= documentHeight) {
+                getImage();
+            }
+
+        })
+
+    </script>
+{% endblock %}

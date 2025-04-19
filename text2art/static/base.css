@@ -1,0 +1,227 @@
+.myAlert {
+    /*position: fixed;*/
+    position: absolute;
+    top: 0;
+    right: 35vw;
+
+    width: 30vw;
+
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: opacity .3s ease-in-out, transform .3s ease-out;
+    opacity: 0;
+}
+
+.myAlert-show {
+    transform: translateY(15vh);
+    opacity: 1;
+}
+
+
+.modal-box {
+    font-family: 'Yeseva One', cursive;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 弹出模态框的按钮 */
+.modal-box .show-modal {
+    font-family: 'serif';
+    color: #fff;
+    /*background-color: #F17C67; */
+    /*background-color: #ED4521;*/
+    background-color: #0077CC;
+    /*background-color: #3D8D73;*/
+    font-size: 18px;
+    font-weight: 600;
+    font-style: italic;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    /*padding: 10px 15px;*/
+    /*    margin: 80px auto 0; */
+    border: none;
+    outline: none;
+    /*box-shadow: 0 0 15px rgb(241, 124, 103);*/
+    /*box-shadow: 0 0 15px rgb(237, 69, 33);*/
+    box-shadow: 0 0 15px rgb(0, 119, 204);
+    /*box-shadow: 0 0 15px rgb(79, 174, 143);*/
+    display: block;
+}
+
+.modal-box .show-modal:hover {
+    transform: scale(1.1); /* 放大1.2倍 */
+    box-shadow: 0 0 25px rgb(0, 119, 204);
+}
+
+.modal-box .show-modal:focus {
+    color: #fff;
+    border: none;
+    outline: none;
+    text-decoration: none;
+}
+
+.modal-backdrop.in {
+    opacity: 0;
+}
+
+.modal-box .modal {
+    /*top: 70px !important;*/
+    top: -40px !important;
+}
+
+.modal-box .modal-dialog {
+    width: 400px;
+    margin: 30px auto 10px;
+}
+
+/* 文本框背景颜色 */
+.modal-box .modal-dialog .modal-content {
+    /*background: #FCEBE3;*/
+    background: #F4F4F4;
+    text-align: center;
+    border: 1px solid transparent;
+    box-shadow: 0 0 10px rgba(0, 5, 85, .2);
+}
+
+.my-close-btn {
+    color: #222;
+    font-size: 28px;
+    text-shadow: none;
+    line-height: 15px;
+    opacity: 1;
+    position: absolute;
+    left: auto;
+    right: 10px;
+    top: 10px;
+    z-index: 1;
+    transition: all 0.3s;
+}
+
+
+.modal-box .modal-dialog .modal-content .modal-body {
+    padding: 50px 20px !important;
+}
+
+.modal-box .modal-dialog .modal-content .modal-body .title {
+    color: #222;
+    font-family: 'Homemade Apple', cursive;
+    font-size: 30px;
+    margin: 0 0 20px 0;
+}
+
+.modal-box .modal-dialog .modal-content .modal-body .sub-title {
+    color: #ED4521;
+    font-size: 30px;
+    text-transform: uppercase;
+    margin: 0 0 15px;
+}
+
+.modal-box .modal-dialog .modal-content .modal-body .form-group {
+    margin: 0 0 30px;
+}
+
+.modal-box .modal-dialog .modal-content .modal-body .form-control {
+    background: none;
+    width: 80%;
+    margin: 0 auto 20px;
+    border: none;
+    border-bottom: 1px solid #BFB7B4;
+    border-radius: 0;
+    box-shadow: none;
+
+    /* add by me */
+    font-size: 18px;
+}
+
+.modal-box .modal-dialog .modal-content .modal-body .form-control::placeholder {
+    color: #000;
+    /*font-size: 13px;*/
+    font-size: 15px;
+}
+
+.modal-box .modal-dialog .modal-content .modal-body .form-control:focus {
+    box-shadow: none;
+    border: none;
+    border-bottom: 1px solid #BFB7B4;
+}
+
+/* 登录按钮颜色 */
+.modal-box .modal-dialog .modal-content .modal-body .subscribe {
+    color: #fff;
+    /*background: #ED4521;*/
+    /*background: #6D8CAA;*/
+    background: #7BA3CC;
+    font-size: 18px;
+    text-transform: uppercase;
+    padding: 6px 20px;
+    margin: 0 auto;
+    border: none;
+    display: block;
+    position: relative;
+    z-index: 1;
+    transition: all 0.4s ease 0s;
+}
+
+.modal-box .modal-dialog .modal-content .modal-body .subscribe:hover {
+    transform: translateY(-6px);
+    background-color: #5C80A3;
+}
+
+.modal-box .modal-dialog .modal-content .modal-body .subscribe:after {
+    content: "";
+    /*background: radial-gradient(ellipse at center center, rgba(211, 42, 0, 0.49) 0%, rgba(0, 0, 0, 0) 80%);*/
+    background: radial-gradient(ellipse at center center, rgba(193, 209, 224, 1) 0%, rgba(0, 0, 0, 0) 80%);
+    height: 10px;
+    width: 100%;
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: -1;
+    transition-duration: 0.3s;
+}
+
+.modal-box .modal-dialog .modal-content .modal-body .subscribe:hover:after {
+    opacity: 1;
+    transform: translateY(5px);
+}
+
+@media only screen and (max-width: 479px) {
+    .modal-dialog {
+        width: 98% !important;
+    }
+}
+
+.my-modal-footer {
+    /*display: flex;*/
+    background-color: #ECECEC;
+}
+
+.left-tag {
+    margin-right: auto;
+}
+
+.left-tag a:hover {
+    font-weight: bold;
+}
+
+.right-tag {
+    margin-left: auto;
+}
+
+.no-underline {
+    text-decoration: none;
+}
+
+.password-eye:hover {
+    transform: scale(1.2); /* 放大1.2倍 */
+    cursor: pointer; /* 鼠标悬停在元素上时变为显示手形*/
+}
+
+.password-eye {
+    position: absolute;
+    right: 40px;
+    top: 8px;
+}

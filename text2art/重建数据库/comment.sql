@@ -1,0 +1,16 @@
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (1, 'Hello World!', 5, 8, '2023-05-08 12:31:25');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (4, 'This is edit.', 5, 8, '2023-05-08 14:18:54');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (5, '好像有一个Bug？', 5, 8, '2023-05-08 14:25:07');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (6, 'Bug修复！！！', 5, 8, '2023-05-08 14:28:06');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (7, '测试论坛多用户讨论功能', 5, 1, '2023-05-08 14:28:47');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (12, '评论功能测试', 184, 8, '2023-05-11 01:57:45');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (13, '测试评论功能', 8, 1, '2023-05-11 06:42:34');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (14, '测试删除功能', 8, 1, '2023-05-11 06:43:07');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (15, '云海航行', 124, 1, '2023-05-20 03:50:52');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (17, '实现评论删除', 5, 1, '2023-05-20 03:55:07');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (18, 'Hello, World!', 124, 2, '2023-05-20 06:06:23');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (27, '发表评论', 124, 8, '2023-05-24 14:15:07');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (31, 'Hello, World!', 102, 12, '2023-05-24 14:32:35');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (33, '发表评论', 47, 2, '2023-05-24 14:48:36');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (47, '5月27日，答辩前夕', 124, 2, '2023-05-27 15:29:40');
+INSERT INTO `comment` (`id`, `text`, `image_id`, `user_id`, `time`) VALUES (48, '今天是六一儿童节！', 124, 2, '2023-06-01 15:27:53');
